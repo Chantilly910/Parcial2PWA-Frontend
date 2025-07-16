@@ -1,39 +1,45 @@
-import React, { Component } from 'react';
-import axios from '@/utils/api';
-import { Navigate } from 'react-router-dom';
+import React, { Component } from "react";
+import { api } from "../api";
+import { Navigate } from "react-router-dom";
 
 export default class PostForm extends Component {
-  state = { title: '', content: '', redirect: false, error: '' };
+  state = {
+    title: "",
+    content: "",
+    redirect: false,
+    error: ""
+  };
 
-  handleChange = e => this.setState({ [e.target.name]: e.target.value });
+  handleChange = (e) => this.setState({ [e.target.name]: e.target.value });
 
-  handleSubmit = async e => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    const savedUser = localStorage.getItem("user");
-    const user = savedUser ? JSON.parse(savedUser) : null;
+    const user = JSON.parse(localStorage.getItem("user"));
     try {
-      await axios.post('/posts', {
+      await api.createPost({
         title: this.state.title,
         content: this.state.content,
-        author: user._id,
+        author: user._id
       });
       this.setState({ redirect: true });
-    } catch {
-      this.setState({ error: 'Error creando post' });
+    } catch (err) {
+      this.setState({ error: "No se pudo crear el post" });
     }
   };
 
   render() {
-    if (this.state.redirect) return <Navigate to="/posts" />;
+    if (this.state.redirect) {
+      return <Navigate to="/posts" />;
+    }
     return (
       <div>
-        <h2>Crear Post</h2>
-        {this.state.error && <p style={{color:'red'}}>{this.state.error}</p>}
+        <h2>Nuevo Post</h2>
         <form onSubmit={this.handleSubmit}>
           <input name="title" placeholder="Título" onChange={this.handleChange} required />
           <textarea name="content" placeholder="Contenido" onChange={this.handleChange} required />
           <button type="submit">Crear</button>
         </form>
+        {this.state.error && <p>{this.state.error}</p>}
       </div>
     );
   }

@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
@@ -17,7 +16,7 @@ class Register extends Component {
     e.preventDefault();
     const { username, email } = this.state;
     try {
-      const res = await axios.post(import.meta.env.VITE_API_URL + '/users', { username, email });
+      const res = await axios.post("http://localhost:4000/api/users", { username, email });
       const user = res.data;
       localStorage.setItem('user', JSON.stringify(user));
       this.setState({ redirect: true });

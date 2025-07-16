@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from '../utils/api';
+import { api } from "../api";
 
 export default class Users extends Component {
   state = { users: [], error: '' };
@@ -10,7 +10,7 @@ export default class Users extends Component {
 
   fetchUsers = async () => {
     try {
-      const res = await axios.get('/users');
+      const res = await api.getUsers(); 
       this.setState({ users: res.data.data });
     } catch {
       this.setState({ error: 'Error cargando usuarios' });

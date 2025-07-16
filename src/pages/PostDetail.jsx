@@ -1,15 +1,33 @@
 import React, { Component } from 'react';
-import axios from '../utils/api';
-import { Navigate } from 'react-router-dom';
+import { api } from '../api';
+import { Navigate, useParams } from 'react-router-dom';
 
-export default class PostDetail extends Component {
+// Este HOC permite usar params en un class component:
+function withParams(Component) {
+  return props => {
+    const params = useParams();
+    return <Component {...props} params={params} />;
+  };
+}
+
+class PostDetail extends Component {
   state = { title: '', content: '', loaded: false, redirect: false, error: '' };
 
   async componentDidMount() {
-    const { id } = this.props.params || this.props.match.params;
+    const { id } = this.props.params;
     try {
-      const res = await axios.get(`/posts/${id}`);
-      this.setState({ title: res.data.data.title, content: res.data.data.content, loaded: true });
+      // Si tienes api.getPost(id), úsalo directamente:
+      if (typeof api.getPost === "function") {
+        const res = await api.getPost(id);
+        const post = res.data.data;
+        this.setState({ title: post.title, content: post.content, loaded: true });
+      } else {
+        // Si no, busca el post entre todos:
+        const res = await api.getPosts();
+        const post = res.data.data.find(p => p._id === id);
+        if (!post) throw new Error();
+        this.setState({ title: post.title, content: post.content, loaded: true });
+      }
     } catch {
       this.setState({ error: 'Error cargando el post' });
     }
@@ -19,9 +37,9 @@ export default class PostDetail extends Component {
 
   handleSubmit = async e => {
     e.preventDefault();
-    const { id } = this.props.params || this.props.match.params;
+    const { id } = this.props.params;
     try {
-      await axios.put(`/posts/${id}`, { title: this.state.title, content: this.state.content });
+      await api.editPost(id, { title: this.state.title, content: this.state.content });
       this.setState({ redirect: true });
     } catch {
       this.setState({ error: 'Error actualizando post' });
@@ -34,7 +52,7 @@ export default class PostDetail extends Component {
     return (
       <div>
         <h2>Editar Post</h2>
-        {this.state.error && <p style={{color:'red'}}>{this.state.error}</p>}
+        {this.state.error && <p style={{ color: 'red' }}>{this.state.error}</p>}
         <form onSubmit={this.handleSubmit}>
           <input name="title" value={this.state.title} onChange={this.handleChange} required />
           <textarea name="content" value={this.state.content} onChange={this.handleChange} required />
@@ -44,3 +62,5 @@ export default class PostDetail extends Component {
     );
   }
 }
+
+export default withParams(PostDetail);
