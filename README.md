@@ -9,6 +9,9 @@ Interfaz web desarrollada con **React** para gestionar usuarios y posts como par
 - Node.js 18 o superior
 - Tener el backend corriendo en `http://localhost:4000`
 - Navegador moderno
+- Repositorio del backend:
+- https://github.com/Chantilly910/Parcial-PWA-Backend
+
 
 ---
 
