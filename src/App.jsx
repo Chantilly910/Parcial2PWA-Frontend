@@ -1,27 +1,34 @@
+import React from "react";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import Navbar from "./components/Navbar.jsx";
+import Register from "./components/Register.jsx";
+import Posts from "./components/Posts.jsx";
+import PostForm from "./components/PostForm.jsx";
+import PostDetail from "./components/PostDetail.jsx";
+import Users from "./components/Users.jsx";
 
-import React, { Component } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import NavBar from './components/NavBar.jsx';
-import Register from './pages/Register.jsx';
-import Posts from './pages/Posts.jsx';
-import PostDetail from './pages/PostDetail.jsx';
-import CreatePost from './pages/CreatePost.jsx';
-import Users from './pages/Users.jsx';
-
-class App extends Component {
+class App extends React.Component {
   render() {
+    const savedUser = localStorage.getItem("user");
+    const user = savedUser ? JSON.parse(savedUser) : null;
     return (
-      <>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Navigate to="/register" />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/posts" element={<Posts />} />
-          <Route path="/posts/new" element={<CreatePost />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
-          <Route path="/users" element={<Users />} />
-        </Routes>
-      </>
+      <Router>
+        <Navbar />
+        <div className="container">
+          <Switch>
+            <Route exact path="/">
+              {user ? <Redirect to="/posts" /> : <Register />}
+            </Route>
+            <Route exact path="/posts" component={Posts} />
+            <Route exact path="/posts/new" component={PostForm} />
+            <Route exact path="/posts/:id" component={PostDetail} />
+            <Route exact path="/users" component={Users} />
+            <Route path="*">
+              <h2>Página no encontrada</h2>
+            </Route>
+          </Switch>
+        </div>
+      </Router>
     );
   }
 }

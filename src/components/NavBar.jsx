@@ -1,17 +1,29 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { NavLink } from "react-router-dom";
 
-export default class Navbar extends Component {
+class Navbar extends React.Component {
+  handleLogout() {
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  }
+
   render() {
+    const savedUser = localStorage.getItem("user");
+    const user = savedUser ? JSON.parse(savedUser) : null;
     return (
-      <nav style={{ backgroundColor: '#222', padding: '1rem', color: '#fff' }}>
-        <ul style={{ display: 'flex', gap: '1rem', listStyle: 'none' }}>
-          <li><Link to="/posts" style={{ color: '#fff' }}>Posts</Link></li>
-          <li><Link to="/posts/new" style={{ color: '#fff' }}>Crear Post</Link></li>
-          <li><Link to="/users" style={{ color: '#fff' }}>Usuarios</Link></li>
-          <li><Link to="/register" style={{ color: '#fff' }}>Registro</Link></li>
-        </ul>
+      <nav>
+        {user ? (
+          <>
+            <NavLink to="/posts" activeClassName="active">Posts</NavLink>
+            <NavLink to="/users" activeClassName="active">Usuarios</NavLink>
+            <button onClick={this.handleLogout} style={{ marginLeft: 16 }}>Salir</button>
+          </>
+        ) : (
+          <span>Parcial 2 PWA</span>
+        )}
       </nav>
     );
   }
 }
+
+export default Navbar;
